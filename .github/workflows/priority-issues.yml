@@ -28,7 +28,7 @@ jobs:
       - uses: polarsource/actions/auth@main
         id: polar
         with:
-          scope: 'creator:benefits:read'
+          scope: 'benefits:read'
 
       - name: 'Check if author has access to priority answers'
         id: check-benefit
