@@ -1,0 +1,13 @@
+on:
+  workflow_dispatch:
+    inputs:
+      foo:
+        type: string
+        required: true
+
+jobs:
+  print-foo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print foo
+        run: echo  Foo is ${{ inputs.foo }}
