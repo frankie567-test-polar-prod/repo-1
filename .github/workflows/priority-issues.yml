@@ -1,31 +1,25 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Priority Issues
 
-# Controls when the workflow will run
 on:
   issues:
     types: [opened]
 
 permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
+  id-token: write
+  contents: read
   issues: write
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  POLAR_BENEFIT_ID: 1bb72238-37fc-4d8b-ae85-f14fec7f879d
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  check-priority:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      # Runs a set of commands using the runners shell
-      - uses: polarsource/actions/auth@main
+      - uses: polarsource/actions/auth@v1
         id: polar
         with:
           scope: 'benefits:read'
@@ -33,7 +27,7 @@ jobs:
       - name: 'Check if author has access to priority answers'
         id: check-benefit
         run: |
-          resp=$(curl -XGET -H "Authorization: Bearer ${{ steps.polar.outputs.token }}" https://api.polar.sh/api/v1/benefits/1bb72238-37fc-4d8b-ae85-f14fec7f879d/grants?is_granted=true&github_user_id=${{ github.event.issue.user.id }})
+          resp=$(curl -XGET -H "Authorization: Bearer ${{ steps.polar.outputs.token }}" https://api.polar.sh/api/v1/benefits/${{ env.POLAR_BENEFIT_ID }}/grants?is_granted=true&github_user_id=${{ github.event.issue.user.id }})
           count=$(($(jq -r '.pagination | .total_count' <<< "${resp}")))
           echo "count=$(echo $count)" >> $GITHUB_OUTPUT
 
